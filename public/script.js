@@ -4,13 +4,15 @@ async function fetchMessages() {
     const messagesTable = document.getElementById('messages');
 
     if (messagesTable) {
-        messagesTable.innerHTML = messages.filter(msg => msg.approved).map(msg => `
-            <tr>
-                <td>${new Date(msg.date).toLocaleDateString()}</td>
-                <td>${msg.location}</td>
-                <td>${msg.text}</td>
-            </tr>
-        `).join('');
+        messagesTable.innerHTML = messages
+            .filter(msg => msg.approved)
+            .map(msg => `
+                <tr>
+                    <td>${new Date(msg.date).toLocaleDateString()}</td>
+                    <td>${msg.location}</td>
+                    <td>${msg.text}</td>
+                </tr>
+            `).join('');
     }
 }
 

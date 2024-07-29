@@ -19,11 +19,8 @@ app.post('/webhook', (req, res) => {
   if (message && message.text) {
     const chatId = message.chat.id;
     const text = message.text;
+    const location = 'Unknown location'; // Placeholder for location logic
 
-    // For simplicity, assuming the location as 'Unknown location'
-    const location = 'Unknown location'; // You may add logic to fetch location
-
-    // Add message to in-memory storage
     messages.push({ text, location, date: new Date(), approved: false });
 
     res.status(200).send('Message received');
