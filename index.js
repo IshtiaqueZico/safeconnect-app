@@ -21,7 +21,7 @@ app.post('/webhook', (req, res) => {
     const text = message.text;
     const location = 'Unknown location'; // Placeholder for location logic
 
-    messages.push({ text, location, date: new Date(), approved: false });
+    messages.push({ text, location, date: new Date(), approved: false, urgent: false });
 
     res.status(200).send('Message received');
   } else {
@@ -32,6 +32,17 @@ app.post('/webhook', (req, res) => {
 // Endpoint to get messages
 app.get('/messages', (req, res) => {
   res.json(messages);
+});
+
+// Endpoint to get a single message by ID
+app.get('/message/:id', (req, res) => {
+  const { id } = req.params;
+  const message = messages[id];
+  if (message) {
+    res.json(message);
+  } else {
+    res.status(404).send('Message not found');
+  }
 });
 
 // Endpoint to approve a message
@@ -51,6 +62,28 @@ app.post('/reject', (req, res) => {
   if (messages[index]) {
     messages.splice(index, 1);
     res.status(200).send('Message rejected');
+  } else {
+    res.status(404).send('Message not found');
+  }
+});
+
+// Endpoint to edit a message
+app.post('/edit', (req, res) => {
+  const { index, text } = req.body;
+  if (messages[index]) {
+    messages[index].text = text;
+    res.status(200).send('Message edited');
+  } else {
+    res.status(404).send('Message not found');
+  }
+});
+
+// Endpoint to mark a message as urgent
+app.post('/urgent', (req, res) => {
+  const { index } = req.body;
+  if (messages[index]) {
+    messages[index].urgent = true;
+    res.status(200).send('Message marked as urgent');
   } else {
     res.status(404).send('Message not found');
   }

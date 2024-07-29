@@ -19,29 +19,6 @@ async function fetchMessages() {
     }
 }
 
-// Fetch and display messages for the dashboard
-async function fetchDashboardMessages() {
-    const response = await fetch('/messages');
-    const messages = await response.json();
-    const messagesTable = document.getElementById('messages');
-
-    if (messagesTable) {
-        messagesTable.innerHTML = messages.map((msg, index) => `
-            <tr>
-                <td>${new Date(msg.date).toLocaleDateString()}</td>
-                <td>${msg.location}</td>
-                <td>${msg.text}</td>
-                <td>
-                    ${msg.approved ? 'Approved' : `
-                        <button onclick="approveMessage(${index})">Approve</button>
-                        <button onclick="rejectMessage(${index})">Reject</button>
-                    `}
-                </td>
-            </tr>
-        `).join('');
-    }
-}
-
 // Approve a message
 async function approveMessage(index) {
     await fetch('/approve', {
@@ -57,6 +34,37 @@ async function approveMessage(index) {
 // Reject a message
 async function rejectMessage(index) {
     await fetch('/reject', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ index }),
+    });
+    fetchDashboardMessages();
+}
+
+// Edit a message
+async function editMessage(index, newText) {
+    await fetch('/edit', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ index, text: newText }),
+    });
+    fetchDashboardMessages();
+}
+
+// Fetch a single message by ID
+async function fetchMessageById(id) {
+    const response = await fetch(`/message/${id}`);
+    const message = await response.json();
+    console.log(message); // Do something with the fetched message
+}
+
+// Mark a message as urgent
+async function markAsUrgent(index) {
+    await fetch('/urgent', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
