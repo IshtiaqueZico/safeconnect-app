@@ -2,18 +2,20 @@
 async function fetchMessages() {
     const response = await fetch('/messages');
     const messages = await response.json();
-    const messagesTable = document.getElementById('messages');
+    const messagesContainer = document.getElementById('messages-container');
 
-    if (messagesTable) {
-        messagesTable.innerHTML = messages
+    if (messagesContainer) {
+        messagesContainer.innerHTML = messages
             .filter(msg => msg.approved)
             .map(msg => `
-                <tr>
-                    <td>${new Date(msg.date).toLocaleDateString()}</td>
-                    <td>${msg.location}</td>
-                    <td>${msg.text}</td>
-                </tr>
+                <div class="message-card">
+                    <div class="message-date">${new Date(msg.date).toLocaleDateString()}</div>
+                    <div class="message-location">${msg.location}</div>
+                    <div class="message-text">${msg.text}</div>
+                </div>
             `).join('');
+    } else {
+        console.error('Messages container element not found');
     }
 }
 

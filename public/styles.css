@@ -2,7 +2,7 @@ body {
     font-family: 'Roboto', sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f0f0f0;
+    background-color: #f9f9f9;
     color: #333;
 }
 
@@ -14,9 +14,18 @@ header {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+header h1 {
+    margin: 0;
+    font-size: 2.5rem;
+}
+
+header p {
+    font-size: 1.25rem;
+}
+
 main {
     padding: 2rem;
-    max-width: 800px;
+    max-width: 900px;
     margin: 0 auto;
 }
 
@@ -25,6 +34,7 @@ main {
     padding: 2rem;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 2rem;
 }
 
 #messages-section h2 {
@@ -32,23 +42,34 @@ main {
     font-size: 1.5rem;
 }
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 1rem;
+#messages-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
-table, th, td {
-    border: 1px solid #ddd;
+.message-card {
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
 }
 
-th, td {
-    padding: 0.5rem;
-    text-align: left;
+.message-card .message-date {
+    font-size: 0.9rem;
+    color: #777;
+    margin-bottom: 0.5rem;
 }
 
-th {
-    background-color: #f4f4f4;
+.message-card .message-location {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.message-card .message-text {
+    font-size: 1.1rem;
 }
 
 footer {
@@ -59,4 +80,14 @@ footer {
     position: fixed;
     width: 100%;
     bottom: 0;
+}
+
+@media (max-width: 600px) {
+    header h1 {
+        font-size: 2rem;
+    }
+
+    header p {
+        font-size: 1rem;
+    }
 }
