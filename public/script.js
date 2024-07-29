@@ -1,3 +1,4 @@
+// Fetch and display messages for the public page
 async function fetchMessages() {
     const response = await fetch('/messages');
     const messages = await response.json();
@@ -16,6 +17,7 @@ async function fetchMessages() {
     }
 }
 
+// Fetch and display messages for the dashboard
 async function fetchDashboardMessages() {
     const response = await fetch('/messages');
     const messages = await response.json();
@@ -38,6 +40,7 @@ async function fetchDashboardMessages() {
     }
 }
 
+// Approve a message
 async function approveMessage(index) {
     await fetch('/approve', {
         method: 'POST',
@@ -49,6 +52,7 @@ async function approveMessage(index) {
     fetchDashboardMessages();
 }
 
+// Reject a message
 async function rejectMessage(index) {
     await fetch('/reject', {
         method: 'POST',
@@ -60,7 +64,8 @@ async function rejectMessage(index) {
     fetchDashboardMessages();
 }
 
-if (window.location.pathname === '/dashboard') {
+// Check the path and fetch messages accordingly
+if (window.location.pathname === '/dashboard.html') {
     setInterval(fetchDashboardMessages, 5000); // Fetch messages every 5 seconds
     fetchDashboardMessages(); // Initial fetch
 } else {
