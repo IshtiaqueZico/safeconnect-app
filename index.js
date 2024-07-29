@@ -7,7 +7,6 @@ const port = process.env.PORT || 3000;
 const token = process.env.TELEGRAM_TOKEN;
 const apiUrl = `https://api.telegram.org/bot${token}/sendMessage`;
 
-// In-memory storage for messages
 let messages = [];
 
 // Middleware
@@ -20,7 +19,9 @@ app.post('/webhook', (req, res) => {
   if (message && message.text) {
     const chatId = message.chat.id;
     const text = message.text;
-    const location = message.location || 'Unknown location'; // You may add logic to fetch location
+
+    // For simplicity, assuming the location as 'Unknown location'
+    const location = 'Unknown location'; // You may add logic to fetch location
 
     // Add message to in-memory storage
     messages.push({ text, location, date: new Date(), approved: false });
