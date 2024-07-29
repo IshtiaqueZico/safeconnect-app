@@ -1,59 +1,55 @@
 const express = require('express');
 const axios = require('axios');
 const path = require('path');
-const rateLimit = require('express-rate-limit');
 
 const app = express();
 const port = process.env.PORT || 3000;
 const token = process.env.TELEGRAM_TOKEN;
 const apiUrl = `https://api.telegram.org/bot${token}/sendMessage`;
 
-let messages = new Set();
+// In-memory storage for messages
+let messages = [];
 
+// Middleware
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
-});
-
-app.use(limiter);
-
-app.post('/webhook', async (req, res) => {
+// Handle incoming messages from Telegram
+app.post('/webhook', (req, res) => {
   const { message } = req.body;
   if (message && message.text) {
     const chatId = message.chat.id;
     const text = message.text;
+    const location = message.location || 'Unknown location'; // You may add logic to fetch location
 
-    if (!messages.has(text)) {
-      messages.add(text);
+    // Add message to in-memory storage
+    messages.push({ text, location, date: new Date(), approved: false });
 
-      try {
-        await axios.post(apiUrl, {
-          chat_id: chatId,
-          text: `You said: ${text}`
-        });
-        console.log(`Message received and sent: ${text}`);
-        res.status(200).send('Message sent');
-      } catch (error) {
-        console.error('Error sending message:', error);
-        res.status(500).send('Error sending message');
-      }
-    } else {
-      res.status(200).send('Message already processed');
-    }
+    res.status(200).send('Message received');
   } else {
     res.status(200).send('No message to process');
   }
 });
 
+// Endpoint to get messages
 app.get('/messages', (req, res) => {
-  res.json(Array.from(messages)); // Send the stored messages as JSON
+  res.json(messages);
 });
 
+// Endpoint to approve a message
+app.post('/approve', (req, res) => {
+  const { index } = req.body;
+  if (messages[index]) {
+    messages[index].approved = true;
+    res.status(200).send('Message approved');
+  } else {
+    res.status(404).send('Message not found');
+  }
+});
+
+// Serve the main HTML file
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html')); // Serve the HTML file
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 app.listen(port, () => {
