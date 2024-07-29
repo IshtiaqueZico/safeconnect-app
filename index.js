@@ -48,9 +48,25 @@ app.post('/approve', (req, res) => {
   }
 });
 
+// Endpoint to reject a message
+app.post('/reject', (req, res) => {
+  const { index } = req.body;
+  if (messages[index]) {
+    messages.splice(index, 1);
+    res.status(200).send('Message rejected');
+  } else {
+    res.status(404).send('Message not found');
+  }
+});
+
 // Serve the main HTML file
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Serve the dashboard HTML file
+app.get('/dashboard', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
 });
 
 app.listen(port, () => {
