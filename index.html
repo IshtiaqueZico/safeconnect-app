@@ -3,22 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram Bot Updates</title>
+    <title>SafeConnect Bangladesh</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Telegram Bot Updates</h1>
-    <div id="messages"></div>
-
-    <script>
-        async function fetchMessages() {
-            const response = await fetch('/messages');
-            const messages = await response.json();
-            const messagesDiv = document.getElementById('messages');
-            messagesDiv.innerHTML = messages.map(msg => `<p>${msg}</p>`).join('');
-        }
-
-        setInterval(fetchMessages, 5000); // Fetch messages every 5 seconds
-        fetchMessages(); // Initial fetch
-    </script>
+    <header>
+        <h1>SafeConnect Bangladesh</h1>
+        <p>Stay updated with real-time alerts and notifications.</p>
+    </header>
+    <main>
+        <section id="messages-section">
+            <h2>Latest Alerts</h2>
+            <div id="messages"></div>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2024 SafeConnect Bangladesh. All rights reserved.</p>
+    </footer>
+    <script src="script.js"></script>
 </body>
 </html>
