@@ -1,18 +1,24 @@
 const express = require('express');
 const axios = require('axios');
+const path = require('path');
 
 const app = express();
 const port = process.env.PORT || 3000;
-const token = '7495888669:AAGekL9WnL30aK5Tbx9G_GPcREnFdHFg9-o';
+const token = 'TELEGRAM_TOKEN';
 const apiUrl = `https://api.telegram.org/bot${token}/sendMessage`;
 
+let messages = [];
+
 app.use(express.json());
+app.use(express.static(path.join(__dirname)));
 
 app.post('/webhook', async (req, res) => {
   const { message } = req.body;
   if (message && message.text) {
     const chatId = message.chat.id;
     const text = message.text;
+
+    messages.push(text); // Store the received message
 
     // Echo the received message back to the user
     try {
@@ -30,8 +36,12 @@ app.post('/webhook', async (req, res) => {
   }
 });
 
+app.get('/messages', (req, res) => {
+  res.json(messages); // Send the stored messages as JSON
+});
+
 app.get('/', (req, res) => {
-  res.send('Telegram bot server is running.');
+  res.sendFile(path.join(__dirname, 'index.html')); // Serve the HTML file
 });
 
 app.listen(port, () => {
