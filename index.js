@@ -26,6 +26,7 @@ app.post('/webhook', async (req, res) => {
           chat_id: chatId,
           text: `You said: ${text}`
         });
+        console.log(`Message received and sent: ${text}`);
         res.status(200).send('Message sent');
       } catch (error) {
         console.error('Error sending message:', error);
