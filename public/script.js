@@ -65,7 +65,7 @@ async function rejectMessage(index) {
 }
 
 // Check the path and fetch messages accordingly
-if (window.location.pathname === '/dashboard.html') {
+if (window.location.pathname.endsWith('/dashboard')) {
     setInterval(fetchDashboardMessages, 5000); // Fetch messages every 5 seconds
     fetchDashboardMessages(); // Initial fetch
 } else {

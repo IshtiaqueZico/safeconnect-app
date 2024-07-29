@@ -1,6 +1,7 @@
 const express = require('express');
 const axios = require('axios');
 const path = require('path');
+require('dotenv').config();
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -17,7 +18,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.post('/webhook', (req, res) => {
   const { message } = req.body;
   if (message && message.text) {
-    const chatId = message.chat.id;
     const text = message.text;
     const location = 'Unknown location'; // Placeholder for location logic
 
