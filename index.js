@@ -1,6 +1,7 @@
 const express = require('express');
 const axios = require('axios');
 const path = require('path');
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -10,9 +11,14 @@ const apiUrl = `https://api.telegram.org/bot${token}/sendMessage`;
 let messages = new Set();
 
 app.use(express.json());
-
-// Serve static files from the root directory
 app.use(express.static(path.join(__dirname, 'public')));
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+});
+
+app.use(limiter);
 
 app.post('/webhook', async (req, res) => {
   const { message } = req.body;
