@@ -32,6 +32,30 @@ const fetchMessages = async () => {
     }
 };
 
+const fetchDashboardMessages = async () => {
+    const messages = await apiFetch('/messages');
+    const messagesTableBody = document.getElementById('messages');
+
+    if (messagesTableBody && messages) {
+        messagesTableBody.innerHTML = messages
+            .map((msg, index) => `
+                <tr>
+                    <td>${new Date(msg.date).toLocaleDateString()}</td>
+                    <td>${msg.location}</td>
+                    <td>${msg.text}</td>
+                    <td>
+                        <div class="actions">
+                            <button class="action-btn approve-btn" onclick="approveMessage(${index})">Approve</button>
+                            <button class="action-btn reject-btn" onclick="rejectMessage(${index})">Reject</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+    } else {
+        console.error('Messages table body element not found or no messages to display');
+    }
+};
+
 const approveMessage = async (index) => {
     await apiFetch('/approve', 'POST', { index });
     fetchDashboardMessages();
@@ -47,19 +71,9 @@ const editMessage = async (index, newText) => {
     fetchDashboardMessages();
 };
 
-const fetchMessageById = async (id) => {
-    const message = await apiFetch(`/message/${id}`);
-    console.log(message); // Do something with the fetched message
-};
-
 const markAsUrgent = async (index) => {
     await apiFetch('/urgent', 'POST', { index });
     fetchDashboardMessages();
-};
-
-const fetchDashboardMessages = async () => {
-    // Add implementation for fetching dashboard-specific messages if different from public messages
-    fetchMessages();
 };
 
 const initializeMessageFetching = () => {
