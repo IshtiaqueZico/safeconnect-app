@@ -1,10 +1,23 @@
-// Fetch and display messages for the public page
-async function fetchMessages() {
-    const response = await fetch('/messages');
-    const messages = await response.json();
+const apiFetch = async (endpoint, method = 'GET', data = null) => {
+    try {
+        const response = await fetch(endpoint, {
+            method,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: data ? JSON.stringify(data) : null,
+        });
+        return response.json();
+    } catch (error) {
+        console.error(`Error in ${method} request to ${endpoint}:`, error);
+    }
+};
+
+const fetchMessages = async () => {
+    const messages = await apiFetch('/messages');
     const messagesContainer = document.getElementById('messages-container');
 
-    if (messagesContainer) {
+    if (messagesContainer && messages) {
         messagesContainer.innerHTML = messages
             .filter(msg => msg.approved)
             .map(msg => `
@@ -15,70 +28,48 @@ async function fetchMessages() {
                 </div>
             `).join('');
     } else {
-        console.error('Messages container element not found');
+        console.error('Messages container element not found or no messages to display');
     }
-}
+};
 
-// Approve a message
-async function approveMessage(index) {
-    await fetch('/approve', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ index }),
-    });
+const approveMessage = async (index) => {
+    await apiFetch('/approve', 'POST', { index });
     fetchDashboardMessages();
-}
+};
 
-// Reject a message
-async function rejectMessage(index) {
-    await fetch('/reject', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ index }),
-    });
+const rejectMessage = async (index) => {
+    await apiFetch('/reject', 'POST', { index });
     fetchDashboardMessages();
-}
+};
 
-// Edit a message
-async function editMessage(index, newText) {
-    await fetch('/edit', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ index, text: newText }),
-    });
+const editMessage = async (index, newText) => {
+    await apiFetch('/edit', 'POST', { index, text: newText });
     fetchDashboardMessages();
-}
+};
 
-// Fetch a single message by ID
-async function fetchMessageById(id) {
-    const response = await fetch(`/message/${id}`);
-    const message = await response.json();
+const fetchMessageById = async (id) => {
+    const message = await apiFetch(`/message/${id}`);
     console.log(message); // Do something with the fetched message
-}
+};
 
-// Mark a message as urgent
-async function markAsUrgent(index) {
-    await fetch('/urgent', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ index }),
-    });
+const markAsUrgent = async (index) => {
+    await apiFetch('/urgent', 'POST', { index });
     fetchDashboardMessages();
-}
+};
 
-// Check the path and fetch messages accordingly
-if (window.location.pathname.endsWith('/dashboard')) {
-    setInterval(fetchDashboardMessages, 5000); // Fetch messages every 5 seconds
-    fetchDashboardMessages(); // Initial fetch
-} else {
-    setInterval(fetchMessages, 5000); // Fetch messages every 5 seconds
-    fetchMessages(); // Initial fetch
-}
+const fetchDashboardMessages = async () => {
+    // Add implementation for fetching dashboard-specific messages if different from public messages
+    fetchMessages();
+};
+
+const initializeMessageFetching = () => {
+    if (window.location.pathname.endsWith('/dashboard')) {
+        setInterval(fetchDashboardMessages, 5000); // Fetch messages every 5 seconds
+        fetchDashboardMessages(); // Initial fetch
+    } else {
+        setInterval(fetchMessages, 5000); // Fetch messages every 5 seconds
+        fetchMessages(); // Initial fetch
+    }
+};
+
+document.addEventListener('DOMContentLoaded', initializeMessageFetching);
