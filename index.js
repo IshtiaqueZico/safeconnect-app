@@ -1,7 +1,7 @@
-require('dotenv').config();
 const express = require('express');
 const axios = require('axios');
 const path = require('path');
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -12,6 +12,14 @@ let messages = new Set();
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
+
+// Rate limiter to prevent abuse
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+});
+
+app.use(limiter);
 
 app.post('/webhook', async (req, res) => {
   const { message } = req.body;
