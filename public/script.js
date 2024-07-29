@@ -1,23 +1,10 @@
-const apiFetch = async (endpoint, method = 'GET', data = null) => {
-    try {
-        const response = await fetch(endpoint, {
-            method,
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: data ? JSON.stringify(data) : null,
-        });
-        return response.json();
-    } catch (error) {
-        console.error(`Error in ${method} request to ${endpoint}:`, error);
-    }
-};
-
-const fetchMessages = async () => {
-    const messages = await apiFetch('/messages');
+// Fetch and display messages for the public page
+async function fetchMessages() {
+    const response = await fetch('/messages');
+    const messages = await response.json();
     const messagesContainer = document.getElementById('messages-container');
 
-    if (messagesContainer && messages) {
+    if (messagesContainer) {
         messagesContainer.innerHTML = messages
             .filter(msg => msg.approved)
             .map(msg => `
@@ -28,62 +15,70 @@ const fetchMessages = async () => {
                 </div>
             `).join('');
     } else {
-        console.error('Messages container element not found or no messages to display');
+        console.error('Messages container element not found');
     }
-};
+}
 
-const fetchDashboardMessages = async () => {
-    const messages = await apiFetch('/messages');
-    const messagesTableBody = document.getElementById('messages');
-
-    if (messagesTableBody && messages) {
-        messagesTableBody.innerHTML = messages
-            .map((msg, index) => `
-                <tr>
-                    <td>${new Date(msg.date).toLocaleDateString()}</td>
-                    <td>${msg.location}</td>
-                    <td>${msg.text}</td>
-                    <td>
-                        <div class="actions">
-                            <button class="action-btn approve-btn" onclick="approveMessage(${index})">Approve</button>
-                            <button class="action-btn reject-btn" onclick="rejectMessage(${index})">Reject</button>
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
-    } else {
-        console.error('Messages table body element not found or no messages to display');
-    }
-};
-
-const approveMessage = async (index) => {
-    await apiFetch('/approve', 'POST', { index });
+// Approve a message
+async function approveMessage(index) {
+    await fetch('/approve', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ index }),
+    });
     fetchDashboardMessages();
-};
+}
 
-const rejectMessage = async (index) => {
-    await apiFetch('/reject', 'POST', { index });
+// Reject a message
+async function rejectMessage(index) {
+    await fetch('/reject', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ index }),
+    });
     fetchDashboardMessages();
-};
+}
 
-const editMessage = async (index, newText) => {
-    await apiFetch('/edit', 'POST', { index, text: newText });
+// Edit a message
+async function editMessage(index, newText) {
+    await fetch('/edit', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ index, text: newText }),
+    });
     fetchDashboardMessages();
-};
+}
 
-const markAsUrgent = async (index) => {
-    await apiFetch('/urgent', 'POST', { index });
+// Fetch a single message by ID
+async function fetchMessageById(id) {
+    const response = await fetch(`/message/${id}`);
+    const message = await response.json();
+    console.log(message); // Do something with the fetched message
+}
+
+// Mark a message as urgent
+async function markAsUrgent(index) {
+    await fetch('/urgent', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ index }),
+    });
     fetchDashboardMessages();
-};
+}
 
-const initializeMessageFetching = () => {
-    if (window.location.pathname.endsWith('/dashboard')) {
-        setInterval(fetchDashboardMessages, 5000); // Fetch messages every 5 seconds
-        fetchDashboardMessages(); // Initial fetch
-    } else {
-        setInterval(fetchMessages, 5000); // Fetch messages every 5 seconds
-        fetchMessages(); // Initial fetch
-    }
-};
-
-document.addEventListener('DOMContentLoaded', initializeMessageFetching);
+// Check the path and fetch messages accordingly
+if (window.location.pathname.endsWith('/dashboard')) {
+    setInterval(fetchDashboardMessages, 5000); // Fetch messages every 5 seconds
+    fetchDashboardMessages(); // Initial fetch
+} else {
+    setInterval(fetchMessages, 5000); // Fetch messages every 5 seconds
+    fetchMessages(); // Initial fetch
+}
