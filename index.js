@@ -10,7 +10,9 @@ const apiUrl = `https://api.telegram.org/bot${token}/sendMessage`;
 let messages = new Set();
 
 app.use(express.json());
-app.use(express.static(path.join(__dirname)));
+
+// Serve static files from the root directory
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.post('/webhook', async (req, res) => {
   const { message } = req.body;
@@ -45,7 +47,7 @@ app.get('/messages', (req, res) => {
 });
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html')); // Serve the HTML file
+  res.sendFile(path.join(__dirname, 'public', 'index.html')); // Serve the HTML file
 });
 
 app.listen(port, () => {
